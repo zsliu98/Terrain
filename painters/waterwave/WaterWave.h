@@ -26,12 +26,13 @@ class WaterWave {
 
 private:
     Shader shader;
+    Texture2D texture;
     GLuint VAO, VBO, EBO;
 
     void init();
 
 public:
-    explicit WaterWave(Shader shader);
+    explicit WaterWave();
 
     ~WaterWave();
 

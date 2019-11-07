@@ -19,8 +19,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 void WaterWave::init() {}
 
-WaterWave::WaterWave(Shader shader) {
-    this->shader = shader;
+WaterWave::WaterWave() {
+    this->shader = ResourceManager::GetShader("water_wave");
+    this->texture = ResourceManager::GetTexture("water_wave");
 }
 
 WaterWave::~WaterWave() {

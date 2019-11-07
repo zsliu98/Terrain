@@ -24,19 +24,23 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 class SkyBox {
 private:
-    Shader shader;
-    GLuint VAO, VBO, EBO;
 
+    GLuint VAO, VBO, EBO;
+    Texture2D textures[5];
+    const GLfloat width = 10.0, height = 13;
     void init();
 
 public:
-    explicit SkyBox(Shader shader);
+    Shader shader;
+    explicit SkyBox();
 
     ~SkyBox();
 
     void step();
 
     void draw();
+
+    static void load();
 
 };
 

@@ -19,7 +19,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
 // General purpsoe shader object. Compiles from file, generates
 // compile/link-time error messages and hosts several utility
 // functions for easy management.
@@ -35,7 +34,7 @@ public:
     Shader &Use();
 
     // Compiles the shader from given source code
-    void Compile(const char* vertexPath, const char* fragmentPath); // Note: geometry source code is optional
+    void Compile(const char *vertexPath, const char *fragmentPath, const GLchar *gShaderFile = nullptr); // Note: geometry source code is optional
     // Utility functions
     void SetFloat(const GLchar *name, GLfloat value, GLboolean useShader = false);
 
