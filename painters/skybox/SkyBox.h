@@ -24,14 +24,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 class SkyBox {
 private:
-
+    Shader shader;
     GLuint VAO, VBO, EBO;
     Texture2D textures[5];
-    const GLfloat width = 10.0, height = 13;
+    const GLfloat width = 10.0, height = 11.5;
     void init();
 
 public:
-    Shader shader;
+
     explicit SkyBox();
 
     ~SkyBox();

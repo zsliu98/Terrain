@@ -17,6 +17,7 @@
 
 #include "manager/ResourceManager.h"
 #include "painters/skybox/SkyBox.h"
+#include "painters/waterwave/WaterWave.h"
 
 #include "manager/camera.h"
 
@@ -36,7 +37,7 @@ void do_movement();
 void processInput(GLFWwindow *window);
 
 // Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 0.5f, 0.0f));
 bool keys[1024];
 GLfloat lastX = 0, lastY = 0;
 bool firstMouse = true;
@@ -81,6 +82,10 @@ int main() {
     SkyBox::load();
     SkyBox skyBox = SkyBox();
 
+    WaterWave::load();
+    WaterWave waterWave = WaterWave();
+
+
     // Define camera uniform buffer
     unsigned int uboMatrices;
     glGenBuffers(1, &uboMatrices);
@@ -116,6 +121,9 @@ int main() {
 
         skyBox.step();
         skyBox.draw();
+
+        waterWave.step(deltaTime);
+        waterWave.draw();
 
         glfwPollEvents();
         glfwSwapBuffers(window);

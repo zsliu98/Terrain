@@ -71,6 +71,7 @@ void SkyBox::step() {}
 void SkyBox::draw() {
     this->shader.Use();
     glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
     glDepthFunc(GL_LEQUAL);
     glBindVertexArray(this->VAO);
     this->shader.SetFloat("direction", 1.0);
@@ -78,6 +79,7 @@ void SkyBox::draw() {
         this->textures[i].Bind();
         glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
     }
+    glDepthMask(GL_TRUE);
     this->shader.SetFloat("direction", -1.0);
     for (int i = 0; i < 5; ++i) {
         this->textures[i].Bind();
