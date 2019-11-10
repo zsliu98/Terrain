@@ -16,7 +16,7 @@
 class Island {
 private:
     Shader shader;
-    Texture2D picture, detail;
+    Texture2D picture, detail, grass;
     unsigned char* height_map;
     int map_size;
     GLuint VAO, VBO, EBO;
