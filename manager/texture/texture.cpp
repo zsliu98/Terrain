@@ -35,3 +35,6 @@ void Texture2D::Bind() const {
     glBindTexture(GL_TEXTURE_2D, this->ID);
 }
 
+void Texture2D::Set() {
+    glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD_SIGNED);
+}

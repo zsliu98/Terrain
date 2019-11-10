@@ -25,9 +25,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 class SkyBox {
 private:
     Shader shader;
-    GLuint VAO, VBO, EBO;
-    Texture2D textures[5];
-    const GLfloat width = 10.0, height = 11.5;
+    GLuint VAO, VBO;
+    Texture2D pictures[5];
+    const GLfloat width = 20.0, height = 22.0;
     void init();
 
 public:

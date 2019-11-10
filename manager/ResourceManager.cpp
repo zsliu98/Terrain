@@ -12,12 +12,14 @@
 #include <sstream>
 
 // Instantiate static variables
-std::map<std::string, Texture2D>    ResourceManager::Textures;
-std::map<std::string, Shader>       ResourceManager::Shaders;
+std::map<std::string, Texture2D> ResourceManager::Textures;
+std::map<std::string, Shader> ResourceManager::Shaders;
+std::map<std::string, unsigned char *> ResourceManager::HeightMap;
+std::map<std::string, int[3]> ResourceManager::HeightMapSize;
 
 
 Shader ResourceManager::LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile,
-                                   const std::string& name) {
+                                   const std::string &name) {
     Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
     return Shaders[name];
 }
@@ -26,7 +28,7 @@ Shader ResourceManager::GetShader(const std::string &name) {
     return Shaders[name];
 }
 
-Texture2D ResourceManager::LoadTexture(const GLchar *file, GLboolean alpha, GLuint wrap, const std::string& name) {
+Texture2D ResourceManager::LoadTexture(const GLchar *file, GLboolean alpha, GLuint wrap, const std::string &name) {
     Textures[name] = loadTextureFromFile(file, alpha, wrap);
     return Textures[name];
 }
@@ -69,4 +71,32 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alp
     // And finally free image data
     stbi_image_free(image);
     return texture;
+}
+
+unsigned char *ResourceManager::LoadHeightMap(const GLchar *file, const std::string &name) {
+    int width, height, nrChannels;
+    HeightMap[name] = stbi_load(file, &width, &height, &nrChannels, STBI_grey);
+    int idx = 0, size = width * height;
+//    for (int i = 0; i < width; ++i) {
+//        for (int j = 0; j < height; ++j) {
+//            HeightMap[name][idx] =
+//                    (HeightMap[name][idx] + HeightMap[name][idx + size] + HeightMap[name][idx + 2 * size]) / 3;
+//        }
+//    }
+    HeightMapSize[name][0] = width;
+    HeightMapSize[name][1] = height;
+    HeightMapSize[name][2] = nrChannels;
+    return HeightMap[name];
+}
+
+unsigned char *ResourceManager::GetHeightMap(const std::string &name) {
+    return HeightMap[name];
+}
+
+int ResourceManager::GetHeightMapWidth(const std::string &name) {
+    return HeightMapSize[name][0];
+}
+
+int ResourceManager::GetHeightMapHeight(const std::string &name) {
+    return HeightMapSize[name][1];
 }

@@ -26,9 +26,9 @@ class WaterWave {
 
 private:
     Shader shader;
-    Texture2D texture;
-    GLuint VAO, VBO, EBO;
-    const GLfloat width = 10.0, height = 1, texture_num = 15;
+    Texture2D picture;
+    GLuint VAO, VBO;
+    const GLfloat width = 21.0, height = 1, texture_num = 30;
     GLfloat texture_pos_x = 0.0, texture_pos_y = 0.0;
 
     void init();

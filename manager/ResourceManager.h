@@ -33,6 +33,8 @@ public:
     // Resource storage
     static std::map<std::string, Shader> Shaders;
     static std::map<std::string, Texture2D> Textures;
+    static std::map<std::string, unsigned char *> HeightMap;
+    static std::map<std::string, int[3]> HeightMapSize;
 
     // Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
     static Shader
@@ -48,6 +50,16 @@ public:
 
     // Retrieves a stored texture
     static Texture2D GetTexture(const std::string &name);
+
+    // Loads a height-map from file
+    static unsigned char * LoadHeightMap(const GLchar *file, const std::string &name);
+
+    // Retrieves a stored height-map
+    static unsigned char * GetHeightMap(const std::string &name);
+
+    static int GetHeightMapWidth(const std::string &name);
+
+    static int GetHeightMapHeight(const std::string &name);
 
     // Properly de-allocates all loaded resources
     static void Clear();

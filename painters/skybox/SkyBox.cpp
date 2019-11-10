@@ -52,18 +52,17 @@ void SkyBox::init() {
 
 SkyBox::SkyBox() {
     this->shader = ResourceManager::GetShader("sky_box");
-    this->textures[0] = ResourceManager::GetTexture("sky_box_u");
-    this->textures[1] = ResourceManager::GetTexture("sky_box_l");
-    this->textures[2] = ResourceManager::GetTexture("sky_box_r");
-    this->textures[3] = ResourceManager::GetTexture("sky_box_f");
-    this->textures[4] = ResourceManager::GetTexture("sky_box_b");
+    this->pictures[0] = ResourceManager::GetTexture("sky_box_u");
+    this->pictures[1] = ResourceManager::GetTexture("sky_box_l");
+    this->pictures[2] = ResourceManager::GetTexture("sky_box_r");
+    this->pictures[3] = ResourceManager::GetTexture("sky_box_f");
+    this->pictures[4] = ResourceManager::GetTexture("sky_box_b");
     this->init();
 }
 
 SkyBox::~SkyBox() {
     glDeleteVertexArrays(1, &this->VAO);
     glDeleteBuffers(1, &this->VBO);
-    glDeleteBuffers(1, &this->EBO);
 }
 
 void SkyBox::step() {}
@@ -75,16 +74,18 @@ void SkyBox::draw() {
     glDepthFunc(GL_LEQUAL);
     glBindVertexArray(this->VAO);
     this->shader.SetFloat("direction", 1.0);
+    glActiveTexture(GL_TEXTURE0);
     for (int i = 0; i < 5; ++i) {
-        this->textures[i].Bind();
+        this->pictures[i].Bind();
         glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
     }
     glDepthMask(GL_TRUE);
     this->shader.SetFloat("direction", -1.0);
     for (int i = 0; i < 5; ++i) {
-        this->textures[i].Bind();
+        this->pictures[i].Bind();
         glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
     }
+    glDisable(GL_TEXTURE0);
 }
 
 void SkyBox::load() {

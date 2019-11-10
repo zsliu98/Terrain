@@ -15,11 +15,15 @@
 // stb_image
 #include "stb_image/stb_image.h"
 
+// manager
 #include "manager/ResourceManager.h"
+#include "manager/camera.h"
+
+// painters
 #include "painters/skybox/SkyBox.h"
 #include "painters/waterwave/WaterWave.h"
+#include "painters/island/Island.h"
 
-#include "manager/camera.h"
 
 GLuint SCR_WIDTH = 800;
 GLuint SCR_HEIGHT = 800;
@@ -37,7 +41,7 @@ void do_movement();
 void processInput(GLFWwindow *window);
 
 // Camera
-Camera camera(glm::vec3(0.0f, 0.5f, 0.0f));
+Camera camera(glm::vec3(0.0f, 3.0f, 0.0f));
 bool keys[1024];
 GLfloat lastX = 0, lastY = 0;
 bool firstMouse = true;
@@ -85,6 +89,8 @@ int main() {
     WaterWave::load();
     WaterWave waterWave = WaterWave();
 
+    Island::load();
+    Island island = Island();
 
     // Define camera uniform buffer
     unsigned int uboMatrices;
@@ -111,7 +117,6 @@ int main() {
         glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
         glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
         // Projection
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f,
                                                 100.0f);
@@ -122,6 +127,9 @@ int main() {
         skyBox.step();
         skyBox.draw();
 
+        island.step();
+        island.draw();
+
         waterWave.step(deltaTime);
         waterWave.draw();
 
@@ -129,6 +137,7 @@ int main() {
         glfwSwapBuffers(window);
     }
 
+    ResourceManager::Clear();
     glfwTerminate();
     return 0;
 }

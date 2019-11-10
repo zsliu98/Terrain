@@ -18,10 +18,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "WaterWave.h"
 
 void WaterWave::init() {
-    GLfloat wave_vector[] = {
+    GLfloat vector[] = {
             -width, -width, 0, -width, width, 0, width, width, 0, width, -width, 0
     };
-    GLfloat wave_texture[] = {
+    GLfloat texture[] = {
             0.0f, 0.0f, 0.0f, texture_num, texture_num, texture_num, texture_num, 0.0f,
     };
 
@@ -29,12 +29,12 @@ void WaterWave::init() {
     glGenBuffers(1, &this->VBO);
     glBindVertexArray(this->VAO);
     glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-    GLfloat temp[(sizeof(wave_vector) + sizeof(wave_texture)) / sizeof(GLfloat)];
+    GLfloat temp[(sizeof(vector) + sizeof(texture)) / sizeof(GLfloat)];
     glBufferData(GL_ARRAY_BUFFER, sizeof(temp), temp, GL_STATIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(wave_vector), wave_vector);
-    glBufferSubData(GL_ARRAY_BUFFER, sizeof(wave_vector), sizeof(wave_texture), wave_texture);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vector), vector);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(vector), sizeof(texture), texture);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (void *) (sizeof(wave_vector)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (void *) (sizeof(vector)));
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -45,14 +45,13 @@ void WaterWave::init() {
 
 WaterWave::WaterWave() {
     this->shader = ResourceManager::GetShader("water_wave");
-    this->texture = ResourceManager::GetTexture("water_wave");
+    this->picture = ResourceManager::GetTexture("water_wave");
     this->init();
 }
 
 WaterWave::~WaterWave() {
     glDeleteVertexArrays(1, &this->VAO);
     glDeleteBuffers(1, &this->VBO);
-    glDeleteBuffers(1, &this->EBO);
 }
 
 void WaterWave::step(GLfloat deltatime) {
@@ -71,15 +70,17 @@ void WaterWave::draw() {
     this->shader.SetVector2f("v_offset", glm::vec2(this->texture_pos_x, this->texture_pos_y));
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_SRC_COLOR);
-    //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+    //glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LEQUAL);
     glBindVertexArray(this->VAO);
-    this->texture.Bind();
+    glActiveTexture(GL_TEXTURE0);
+    this->picture.Bind();
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE0);
 }
 
 void WaterWave::load() {
