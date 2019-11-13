@@ -8,6 +8,7 @@
 void Island::init() {
     GLfloat vector[this->map_size + 1][this->map_size + 1][3];
     GLfloat texture[this->map_size + 1][this->map_size + 1][2];
+    GLfloat nvector[this->map_size + 1][this->map_size + 1][3];
     GLint index[this->map_size * this->map_size * 6];
     for (int i = 0; i <= this->map_size; ++i) {
         for (int j = 0; j <= this->map_size; ++j) {
@@ -63,8 +64,15 @@ void Island::init() {
 Island::Island() {
     this->shader = ResourceManager::GetShader("island");
     this->picture = ResourceManager::GetTexture("island");
-    this->detail = ResourceManager::GetTexture("island_detail");
-    this->grass = ResourceManager::GetTexture("island_grass");
+    this->detail[0] = ResourceManager::GetTexture("island_detail0");
+    this->detail[1] = ResourceManager::GetTexture("island_detail1");
+    this->detail[2] = ResourceManager::GetTexture("island_detail2");
+    this->detail[3] = ResourceManager::GetTexture("island_detail3");
+    this->detail[4] = ResourceManager::GetTexture("island_detail4");
+    this->detail[5] = ResourceManager::GetTexture("island_detail5");
+    this->grass[0] = ResourceManager::GetTexture("island_grass0");
+    this->grass[1] = ResourceManager::GetTexture("island_grass1");
+    this->grass[2] = ResourceManager::GetTexture("island_grass2");
     this->height_map = ResourceManager::GetHeightMap("island_height");
     this->map_size = ResourceManager::GetHeightMapWidth("island_height");
     this->init();
@@ -90,20 +98,25 @@ void Island::draw() {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LEQUAL);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ALPHA, GL_SRC_COLOR);
     glBindVertexArray(this->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
     glActiveTexture(GL_TEXTURE0);
     this->picture.Bind();
     glActiveTexture(GL_TEXTURE1);
-    this->detail.Bind();
+    this->detail[this->detail_mode].Bind();
     glActiveTexture(GL_TEXTURE2);
-    this->grass.Bind();
+    glCullFace(GL_BACK);
+    this->grass[this->grass_mode].Bind();
     this->shader.SetFloat("direction", 1.0f);
     glDrawElements(GL_TRIANGLES, this->map_size * this->map_size * 6, GL_UNSIGNED_INT, nullptr);
     this->picture.Bind();
+    glCullFace(GL_FRONT);
     this->shader.SetFloat("direction", -1.0f);
     glDrawElements(GL_TRIANGLES, this->map_size * this->map_size * 6, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
+    glDisable(GL_BLEND);
     glDisable(GL_CULL_FACE);
     glDisable(GL_TEXTURE0);
     glDisable(GL_TEXTURE1);
@@ -113,11 +126,23 @@ void Island::load() {
     ResourceManager::LoadShader("static_source/glsl_source/island.vert.glsl",
                                 "static_source/glsl_source/island.frag.glsl", nullptr, "island");
     ResourceManager::LoadHeightMap("static_source/images/heightmap.bmp", "island_height");
-    ResourceManager::LoadTexture("static_source/images/detail.bmp", false, GL_REPEAT, "island_detail");
+    ResourceManager::LoadTexture("static_source/images/rock0.bmp", false, GL_REPEAT, "island_detail0");
+    ResourceManager::LoadTexture("static_source/images/rock1.jpg", false, GL_REPEAT, "island_detail1");
+    ResourceManager::LoadTexture("static_source/images/rock2.jpg", false, GL_REPEAT, "island_detail2");
+    ResourceManager::LoadTexture("static_source/images/rock3.jpg", false, GL_REPEAT, "island_detail3");
+    ResourceManager::LoadTexture("static_source/images/rock4.jpg", false, GL_REPEAT, "island_detail4");
+    ResourceManager::LoadTexture("static_source/images/rock5.jpg", false, GL_REPEAT, "island_detail5");
     ResourceManager::LoadTexture("static_source/images/terrain-texture3.bmp", false, GL_CLAMP_TO_EDGE, "island");
-    ResourceManager::LoadTexture("static_source/images/grass.jpg", false, GL_REPEAT, "island_grass");
+    ResourceManager::LoadTexture("static_source/images/grass0.jpg", false, GL_REPEAT, "island_grass0");
+    ResourceManager::LoadTexture("static_source/images/grass1.jpg", false, GL_REPEAT, "island_grass1");
+    ResourceManager::LoadTexture("static_source/images/grass2.jpg", false, GL_REPEAT, "island_grass2");
     // Bind camera uniform buffer to Island shader
     unsigned int uniformBlockIndexIsland = glGetUniformBlockIndex(ResourceManager::GetShader("island").ID,
                                                                   "Matrices");
     glUniformBlockBinding(ResourceManager::GetShader("island").ID, uniformBlockIndexIsland, 0);
+}
+
+void Island::setMode(int detail, int grass) {
+    this->detail_mode = detail;
+    this->grass_mode = grass;
 }

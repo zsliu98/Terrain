@@ -27,7 +27,7 @@ private:
     Shader shader;
     GLuint VAO, VBO;
     Texture2D pictures[5];
-    const GLfloat width = 20.0, height = 22.0;
+    const GLfloat width = 40.0, height = 44.0;
     void init();
 
 public:

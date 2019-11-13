@@ -33,7 +33,7 @@ const GLfloat SPEED = 3.0f;
 const GLfloat SENSITIVTY = 0.25f;
 const GLfloat ZOOM = 45.0f;
 
-const GLfloat height_min = 0.2, height_max = 10.0, distance_max = 10.0;
+const GLfloat height_min = 0.2, height_max = 10.0, distance_max = 15.0;
 
 
 // An abstract camera class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL

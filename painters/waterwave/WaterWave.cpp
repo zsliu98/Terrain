@@ -18,16 +18,37 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "WaterWave.h"
 
 void WaterWave::init() {
-    GLfloat vector[] = {
-            -width, -width, 0, -width, width, 0, width, width, 0, width, -width, 0
-    };
-    GLfloat texture[] = {
-            0.0f, 0.0f, 0.0f, texture_num, texture_num, texture_num, texture_num, 0.0f,
-    };
-
+    this->water_size = this->smooth[this->smooth_level] * int(this->width);
+    GLfloat vector[water_size + 1][water_size + 1][3];
+    GLfloat texture[water_size + 1][water_size + 1][2];
+    GLint index[water_size * water_size * 6];
+    for (int i = 0; i <= water_size; ++i) {
+        for (int j = 0; j <= water_size; ++j) {
+            vector[i][j][0] = width * float(i) / float(water_size) - 0.5 * width;
+            vector[i][j][1] = width * float(j) / float(water_size) - 0.5 * width;
+            vector[i][j][2] = 0;
+            texture[i][j][1] = float(i) / float(water_size) * this->texture_num;
+            texture[i][j][0] = float(j) / float(water_size) * this->texture_num;
+        }
+    }
+    int idx = 0;
+    for (int i = 0; i < water_size; ++i) {
+        for (int j = 0; j < water_size; ++j) {
+            int current_vector = i * (water_size + 1) + j;
+            index[idx] = current_vector;
+            index[idx + 2] = current_vector + water_size + 1;
+            index[idx + 3] = current_vector + water_size + 1;
+            index[idx + 1] = current_vector + 1;
+            index[idx + 4] = current_vector + 1;
+            index[idx + 5] = current_vector + water_size + 2;
+            idx += 6;
+        }
+    }
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &this->VBO);
+    glGenBuffers(1, &this->EBO);
     glBindVertexArray(this->VAO);
+
     glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
     GLfloat temp[(sizeof(vector) + sizeof(texture)) / sizeof(GLfloat)];
     glBufferData(GL_ARRAY_BUFFER, sizeof(temp), temp, GL_STATIC_DRAW);
@@ -35,6 +56,9 @@ void WaterWave::init() {
     glBufferSubData(GL_ARRAY_BUFFER, sizeof(vector), sizeof(texture), texture);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (void *) (sizeof(vector)));
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index), index, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -69,7 +93,7 @@ void WaterWave::draw() {
     this->shader.Use();
     this->shader.SetVector2f("v_offset", glm::vec2(this->texture_pos_x, this->texture_pos_y));
     glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_SRC_COLOR);
+    glBlendFunc(GL_ALPHA, GL_SRC_COLOR);
     //glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
@@ -77,7 +101,7 @@ void WaterWave::draw() {
     glBindVertexArray(this->VAO);
     glActiveTexture(GL_TEXTURE0);
     this->picture.Bind();
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glDrawElements(GL_TRIANGLES, this->water_size * this->water_size * 6, GL_UNSIGNED_INT, nullptr);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE0);

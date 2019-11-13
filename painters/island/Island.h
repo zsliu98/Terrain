@@ -16,9 +16,9 @@
 class Island {
 private:
     Shader shader;
-    Texture2D picture, detail, grass;
-    unsigned char* height_map;
-    int map_size;
+    Texture2D picture, detail[6], grass[3];
+    unsigned char *height_map;
+    int map_size, detail_mode = 0, grass_mode = 0;
     GLuint VAO, VBO, EBO;
     const float width = 10.0, height = 1.5;
 
@@ -34,6 +34,8 @@ public:
     void draw();
 
     static void load();
+
+    void setMode(int detail, int grass);
 };
 
 

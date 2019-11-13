@@ -27,6 +27,8 @@
 
 GLuint SCR_WIDTH = 800;
 GLuint SCR_HEIGHT = 800;
+int grass_mode = 0;
+int rock_mode = 0;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
@@ -41,7 +43,7 @@ void do_movement();
 void processInput(GLFWwindow *window);
 
 // Camera
-Camera camera(glm::vec3(0.0f, 3.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 2.0f, 0.0f));
 bool keys[1024];
 GLfloat lastX = 0, lastY = 0;
 bool firstMouse = true;
@@ -62,7 +64,7 @@ int main() {
 #endif
 
     // glfw window creation
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Stars", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Terrain", nullptr, nullptr);
     if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -108,6 +110,7 @@ int main() {
         // Check if any events have been activated and call corresponding response functions
         glfwPollEvents();
         do_movement();
+        island.setMode(rock_mode, grass_mode);
 
         glClearColor(0.3f, 0.2f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -180,6 +183,14 @@ void do_movement() {
     }
     if (keys[GLFW_KEY_D]) {
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    }
+    if (keys[GLFW_KEY_R]) {
+        keys[GLFW_KEY_R] = false;
+        rock_mode = (rock_mode + 1) % 6;
+    }
+    if (keys[GLFW_KEY_G]) {
+        keys[GLFW_KEY_G] = false;
+        grass_mode = (grass_mode + 1) % 3;
     }
 }
 
