@@ -25,7 +25,7 @@
 #include "painters/island/Island.h"
 
 
-GLuint SCR_WIDTH = 800;
+GLuint SCR_WIDTH = 1600;
 GLuint SCR_HEIGHT = 800;
 int grass_mode = 0;
 int rock_mode = 0;
@@ -134,7 +134,7 @@ int main() {
         island.draw();
 
         waterWave.step(deltaTime);
-        waterWave.draw();
+        waterWave.draw(camera.Position);
 
         glfwPollEvents();
         glfwSwapBuffers(window);

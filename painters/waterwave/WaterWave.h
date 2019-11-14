@@ -18,23 +18,38 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef TERRAIN_WATERWAVE_H
 #define TERRAIN_WATERWAVE_H
 
+#include <cmath>
+#include <random>
+
 #include "../../manager/ResourceManager.h"
 #include "../../manager/shader/shader.h"
 #include "../../manager/texture/texture.h"
+
+struct Wave {
+    float kx, ky;
+    float amplitude, omega, time, period;
+};
 
 class WaterWave {
 
 private:
     Shader shader;
-    Texture2D picture;
+    Texture2D picture, normal_map;
     GLuint VAO, VBO, EBO;
     const GLfloat width = 80.0, height = 1, texture_num = 30;
-    const int smooth_level = 0;
+    const int smooth_level = 1;
     const int smooth[8] = {1, 4, 16, 64, 128, 256, 512, 1024};
     int water_size;
+    const int wave_num = 5;
+    Wave *waves[5];
     GLfloat texture_pos_x = 0.0, texture_pos_y = 0.0;
 
     void init();
+
+    Wave *wave_generator();
+
+    void wave_transformer(int idx);
+
 
 public:
     explicit WaterWave();
@@ -43,7 +58,7 @@ public:
 
     void step(GLfloat deltatime);
 
-    void draw();
+    void draw(glm::vec3 camera_position);
 
     static void load();
 

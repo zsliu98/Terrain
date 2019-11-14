@@ -13,9 +13,34 @@ layout (std140) uniform Matrices
 
 uniform vec2 v_offset;
 
+struct Wave
+{
+    vec2 k;
+    float amplitude, omega, time;
+};
+
+uniform Wave[5] waves;
+
 void main()
 {
     TexCoords = vPos + v_offset;
+    vec3 pos = vec3(aPos.x, aPos.y, aPos.z);
+    float hide_factor = min((aPos.x * aPos.x + aPos.y * aPos.y) / 100, 1);
+    float phi = dot(waves[0].k, aPos.xy) - waves[0].omega * waves[0].time;
+    pos.xy = pos.xy - normalize(waves[0].k) * waves[0].amplitude * sin(phi) * hide_factor;
+    pos.z = pos.z + waves[0].amplitude * cos(phi) * hide_factor;
+    phi = dot(waves[2].k, aPos.xy) - waves[2].omega * waves[2].time;
+    pos.xy = pos.xy - normalize(waves[2].k) * waves[2].amplitude * sin(phi) * hide_factor;
+    pos.z = pos.z + waves[2].amplitude * cos(phi) * hide_factor;
+    phi = dot(waves[2].k, aPos.xy) - waves[2].omega * waves[2].time;
+    pos.xy = pos.xy - normalize(waves[2].k) * waves[2].amplitude * sin(phi) * hide_factor;
+    pos.z = pos.z + waves[2].amplitude * cos(phi) * hide_factor;
+    phi = dot(waves[3].k, aPos.xy) - waves[3].omega * waves[3].time;
+    pos.xy = pos.xy - normalize(waves[3].k) * waves[3].amplitude * sin(phi) * hide_factor;
+    pos.z = pos.z + waves[3].amplitude * cos(phi) * hide_factor;
+    phi = dot(waves[4].k, aPos.xy) - waves[4].omega * waves[4].time;
+    pos.xy = pos.xy - normalize(waves[4].k) * waves[4].amplitude * sin(phi) * hide_factor;
+    pos.z = pos.z + waves[4].amplitude * cos(phi) * hide_factor;
     visible = max((1 - (aPos.x * aPos.x + aPos.y * aPos.y) / 1600) * 1, 0.1) - 0.1;
-    gl_Position = projection * view * vec4(aPos.x, aPos.z, aPos.y, 1.0);
+    gl_Position = projection * view * vec4(pos.x, pos.z, pos.y, 1.0);
 }
