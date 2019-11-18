@@ -104,6 +104,9 @@ void WaterWave::draw(glm::vec3 camera_position) {
     this->shader.Use();
 
     this->shader.SetInteger("sprite", 0);
+    this->shader.SetInteger("normalMap", 1);
+    this->shader.SetVector3f("lightDir", glm::vec3(-1.0, 1.0, 1.0));
+    this->shader.SetVector3f("viewPos", camera_position);
 
     for (int i = 0; i < this->wave_num; ++i) {
         this->wave_transformer(i);
@@ -115,9 +118,13 @@ void WaterWave::draw(glm::vec3 camera_position) {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LEQUAL);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     glBindVertexArray(this->VAO);
     glActiveTexture(GL_TEXTURE0);
     this->picture.Bind();
+    glActiveTexture(GL_TEXTURE1);
+    this->normal_map.Bind();
 
     int camera_x = int(lround((camera_position.x / width + 0.5) * this->water_size));
     int camera_y = int(lround((camera_position.z / width + 0.5) * this->water_size));
@@ -152,15 +159,17 @@ void WaterWave::draw(glm::vec3 camera_position) {
         t++;
     }
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_CULL_FACE);
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE0);
+    glDisable(GL_TEXTURE1);
 }
 
 void WaterWave::load() {
     ResourceManager::LoadShader("static_source/glsl_source/waterwave.vert.glsl",
                                 "static_source/glsl_source/waterwave.frag.glsl", nullptr, "water_wave");
     ResourceManager::LoadTexture("static_source/images/SkyBox/SkyBox5.bmp", false, GL_REPEAT, "water_wave");
-    ResourceManager::LoadTexture("static_source/images/normalMap.png", false, GL_REPEAT, "normal");
+    ResourceManager::LoadTexture("static_source/images/SkyBox/normalMap.png", false, GL_REPEAT, "normal");
     // Bind camera uniform buffer to WaterWave shader
     unsigned int uniformBlockIndexWaterWave = glGetUniformBlockIndex(ResourceManager::GetShader("water_wave").ID,
                                                                      "Matrices");
@@ -173,10 +182,10 @@ Wave *WaterWave::wave_generator() {
     std::mt19937 mt(rd());
     std::uniform_real_distribution<double> uniform(-1.0, 1.0);
 
-    wave->kx = float(uniform(mt) * 4);
-    wave->ky = float(uniform(mt) * 4);
-    wave->amplitude = float((uniform(mt) + 1.0) / 30 + 0.02);
-    wave->omega = float((uniform(mt) + 2) / 2);
+    wave->kx = float(uniform(mt) * 1.5);
+    wave->ky = float(uniform(mt) * 1.5);
+    wave->amplitude = float((uniform(mt) + 1.0) / 30 + 0.08);
+    wave->omega = float(sqrt(sqrt(wave->kx * wave->kx + wave->ky * wave->ky)) * 1.5);
     wave->period = 2 * float(M_PI) / wave->omega;
     wave->time = 0;
     return wave;

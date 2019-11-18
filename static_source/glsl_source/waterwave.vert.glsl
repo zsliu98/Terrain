@@ -3,7 +3,8 @@ layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 vPos;
 
 out vec2 TexCoords;
-out float visible;
+out vec3 s_normal;
+out vec3 FragPos;
 
 layout (std140) uniform Matrices
 {
@@ -25,7 +26,7 @@ void main()
 {
     TexCoords = vPos + v_offset;
     vec3 pos = vec3(aPos.x, aPos.y, aPos.z);
-    float hide_factor = min((aPos.x * aPos.x + aPos.y * aPos.y) / 100, 1);
+    float hide_factor = min((aPos.x * aPos.x + aPos.y * aPos.y) / 125, 1);
     float phi = dot(waves[0].k, aPos.xy) - waves[0].omega * waves[0].time;
     pos.xy = pos.xy - normalize(waves[0].k) * waves[0].amplitude * sin(phi) * hide_factor;
     pos.z = pos.z + waves[0].amplitude * cos(phi) * hide_factor;
@@ -41,6 +42,7 @@ void main()
     phi = dot(waves[4].k, aPos.xy) - waves[4].omega * waves[4].time;
     pos.xy = pos.xy - normalize(waves[4].k) * waves[4].amplitude * sin(phi) * hide_factor;
     pos.z = pos.z + waves[4].amplitude * cos(phi) * hide_factor;
-    visible = max((1 - (aPos.x * aPos.x + aPos.y * aPos.y) / 1600) * 1, 0.1) - 0.1;
+    s_normal = normalize(pos - aPos);
+    FragPos = pos;
     gl_Position = projection * view * vec4(pos.x, pos.z, pos.y, 1.0);
 }
