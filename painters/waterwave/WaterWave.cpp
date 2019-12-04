@@ -73,7 +73,12 @@ WaterWave::WaterWave() {
     this->normal_map = ResourceManager::GetTexture("normal");
     for (int i = 0; i < this->wave_num; ++i) {
         this->waves[i] = this->wave_generator();
+        this->kx += this->waves[i]->kx * this->waves[i]->amplitude;
+        this->ky += this->waves[i]->ky * this->waves[i]->amplitude;
     }
+    GLfloat ksize = sqrt(this->kx * this->kx + this->ky * this->ky);
+    this->kx /= ksize;
+    this->ky /= ksize;
     this->init();
 }
 
@@ -86,8 +91,8 @@ WaterWave::~WaterWave() {
 }
 
 void WaterWave::step(GLfloat deltatime) {
-    this->texture_pos_x += deltatime * 0.1;
-    this->texture_pos_y += deltatime * 0.1;
+    this->texture_pos_x += deltatime * 0.1 * this->kx;
+    this->texture_pos_y += deltatime * 0.1 * this->ky;
     if (this->texture_pos_x >= 1.0) {
         this->texture_pos_x -= 1.0;
     }
@@ -100,13 +105,14 @@ void WaterWave::step(GLfloat deltatime) {
     }
 }
 
-void WaterWave::draw(glm::vec3 camera_position) {
+void WaterWave::draw(glm::vec3 camera_position, GLfloat pitch) {
     this->shader.Use();
 
     this->shader.SetInteger("sprite", 0);
     this->shader.SetInteger("normalMap", 1);
     this->shader.SetVector3f("lightDir", glm::vec3(-1.0, 1.0, 1.0));
     this->shader.SetVector3f("viewPos", camera_position);
+    this->shader.SetFloat("pitch", pitch);
 
     for (int i = 0; i < this->wave_num; ++i) {
         this->wave_transformer(i);

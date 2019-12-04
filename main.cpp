@@ -134,7 +134,7 @@ int main() {
         island.draw();
 
         waterWave.step(deltaTime);
-        waterWave.draw(camera.Position);
+        waterWave.draw(camera.Position, camera.Pitch);
 
         glfwPollEvents();
         glfwSwapBuffers(window);

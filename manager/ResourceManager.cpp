@@ -77,12 +77,6 @@ unsigned char *ResourceManager::LoadHeightMap(const GLchar *file, const std::str
     int width, height, nrChannels;
     HeightMap[name] = stbi_load(file, &width, &height, &nrChannels, STBI_grey);
     int idx = 0, size = width * height;
-//    for (int i = 0; i < width; ++i) {
-//        for (int j = 0; j < height; ++j) {
-//            HeightMap[name][idx] =
-//                    (HeightMap[name][idx] + HeightMap[name][idx + size] + HeightMap[name][idx + 2 * size]) / 3;
-//        }
-//    }
     HeightMapSize[name][0] = width;
     HeightMapSize[name][1] = height;
     HeightMapSize[name][2] = nrChannels;

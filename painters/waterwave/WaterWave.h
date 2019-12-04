@@ -42,7 +42,7 @@ private:
     int water_size;
     const int wave_num = 5;
     Wave *waves[5];
-    GLfloat texture_pos_x = 0.0, texture_pos_y = 0.0;
+    GLfloat texture_pos_x = 0.0, texture_pos_y = 0.0, kx = 0, ky = 0;
 
     void init();
 
@@ -58,7 +58,7 @@ public:
 
     void step(GLfloat deltatime);
 
-    void draw(glm::vec3 camera_position);
+    void draw(glm::vec3 camera_position, GLfloat pitch);
 
     static void load();
 
